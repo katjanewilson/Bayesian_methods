@@ -260,7 +260,8 @@ probabilities match with your intuition about which machine was good?
 </div>
 
 ```{r E4}
-# Type your code for Exercise 4 here
+data = data.frame(machine = c(2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L), outcome = c("L", "W", "L", "L", "W", "L", "L", "L", "W", "L", "W", "W", "W", "W", "W", "L", "L", "L", "L", "L", "L", "W", "L", "L", "W", "L", "W", "W", "L", "W", "L"))
+bandit_posterior(data = data)
 ```
 
 <div class="exercise">
@@ -273,7 +274,23 @@ Observe how the posterior probability changes as more plays are made.
 </div>
 
 ```{r E5}
-# Type your code for Exercise 5 here
+data = data.frame(machine = c(2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L), outcome = c("W", "L", "W", "W", "W", "L", "W", "L", "W", "L", "W", "L", "W", "L", "L", "L", "L", "L", "W", "L", "L", "L", "W", "L", "L", "W", "L", "W", "L", "L", "L", "L", "L", "L", "L", "L", "L", "L", "W", "L", "L", "L", "W", "L", "L", "L", "W", "L", "W", "L"))
+
+data1 <- data[1:10,]
+data2 <- data[11:20,]
+data3 <- data[21:30,]
+data4 <- data[31:40,]
+data5 <- data[41:50,]
+bandit_posterior(data1) %>% 
+  bandit_posterior(data2, prior = .)
+bandit_posterior(data1) %>% 
+  bandit_posterior(data2, prior = .) %>%
+  bandit_posterior(data3, prior = .)
+bandit_posterior(data1) %>% 
+  bandit_posterior(data2, prior = .) %>%
+  bandit_posterior(data3, prior = .) %>%
+  bandit_posterior(data4, prior = .)
+
 ```
 
 We can visualize how these posterior probabilities update using the `plot_bandit_posterior` function. This function calculates and plots the 
@@ -297,7 +314,9 @@ Plot the result of your last 50 plays using the code `plot_bandit_posterior(data
 </div>
 
 ```{r E6}
-# Type your code for Exercise 6 here
+data = data.frame(machine = c(2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L), outcome = c("W", "L", "W", "W", "W", "L", "W", "L", "W", "L", "W", "L", "W", "L", "L", "L", "L", "L", "W", "L", "L", "L", "W", "L", "L", "W", "L", "W", "L", "L", "L", "L", "L", "L", "L", "L", "L", "L", "W", "L", "L", "L", "W", "L", "L", "L", "W", "L", "W", "L"))
+plot_bandit_posterior(data)
+
 ```
 
 <div class="question">
