@@ -1,21 +1,19 @@
-## Setup
+## Title of Project
 
-### Load packages
+In this project, I evaluated the....
 
-```{r load-packages, message = FALSE}
+
+```{r load-packages, message=FALSE, warning=FALSE, include=FALSE}
 library(ggplot2)
 library(dplyr)
 library(statsr)
 library(BAS)
+library(MASS)
+library(gridExtra)
 ```
 
-### Load data
 
-Make sure your data and R Markdown files are in the same directory. When loaded
-your data file will be called `movies`. Delete this note when before you submit 
-your work. 
-
-```{r load-data}
+```{r load-packages2, message=FALSE, warning=FALSE, include=FALSE}
 load("raw/movies.Rdata")
 ```
 
@@ -25,14 +23,14 @@ load("raw/movies.Rdata")
 
 ## Part 1: Data
 
-Explain how the data is collected
+Explain how the data is collected here
 
 * * *
 
 ## Part 2: Data manipulation
 
 
-```{r data_manip}
+```{r data_manip, echo=TRUE, message=FALSE, warning=FALSE}
 library(tidyverse)
 
 movies <- movies %>%
@@ -52,39 +50,42 @@ Explain it here
 ```{r exploratory}
 # distribution of outcome
 
-ggplot(data = movies, aes(x = audience_score)) +
+p1 <- ggplot(data = movies, aes(x = audience_score)) +
   geom_histogram(binwidth = 5) +
   ggtitle("Distribution of Audience Score for all Films")
 
 #distribution of outcome for feature films
 feature_films = filter(movies, feature_film == 'yes')
-ggplot(data = feature_films, aes(x = audience_score)) +
+p2 <- ggplot(data = feature_films, aes(x = audience_score)) +
   geom_histogram(binwidth = 5) +
   ggtitle("Feature Films")
 not_feature_films = filter(movies, feature_film == 'no')
-ggplot(data = not_feature_films, aes(x = audience_score)) +
+p3 <- ggplot(data = not_feature_films, aes(x = audience_score)) +
   geom_histogram(binwidth = 5) +
   ggtitle("Not feature films")
+grid.arrange(p1, p2, p3, nrow = 1)
 
 #distribution of outcome for dramas
 drama_films = filter(movies, drama == 'yes')
-ggplot(data = drama_films, aes(x = audience_score)) +
+p1 <- ggplot(data = drama_films, aes(x = audience_score)) +
   geom_histogram(binwidth = 5) +
   ggtitle("Drama Films")
 not_drama_films = filter(movies, drama == 'no')
-ggplot(data = not_drama_films, aes(x = audience_score)) +
+p2 <- ggplot(data = not_drama_films, aes(x = audience_score)) +
   geom_histogram(binwidth = 5) +
   ggtitle("Not drama films")
+grid.arrange(p1, p2, nrow = 1)
 
 #distribution of outcome for R rated films
 R_rated_films = filter(movies, mpaa_rating_R== 'yes')
-ggplot(data = R_rated_films, aes(x = audience_score)) +
+p1 <- ggplot(data = R_rated_films, aes(x = audience_score)) +
   geom_histogram(binwidth = 5) +
   ggtitle("R Rated Films")
 not_R_rated_films = filter(movies, mpaa_rating_R == 'no')
-ggplot(data = not_R_rated_films, aes(x = audience_score)) +
+p2 <- ggplot(data = not_R_rated_films, aes(x = audience_score)) +
   geom_histogram(binwidth = 5) +
   ggtitle("Not R rated films")
+grid.arrange(p1, p2, nrow = 1)
 ```
 
 
@@ -93,7 +94,7 @@ ggplot(data = not_R_rated_films, aes(x = audience_score)) +
 
 Explain it here
 
-```{r exploratory}
+```{r exploratory1}
 # summary statistics
 
 movies %>% group_by(feature_film) %>%
@@ -111,31 +112,28 @@ movies %>% group_by(mpaa_rating_R) %>%
 ## Part 4: Modeling
 
 
-```{r data_manip}
+```{r data_manip2}
 
 ## develop a Bayesian regression model to predict audience score from the explanatory variables
-
 ## simple linear regression
-
-ggplot(data = movies, aes(x = critics_score, y = audience_score)) +
-  geom_point()
+##plot
+# ggplot(data = movies, aes(x = critics_score, y = audience_score)) +
+#   geom_point()
+##create a small dataset
 
 movies_small <- movies %>%
-  select(audience_score, feature_film, drama, runtime,
+  dplyr::select(audience_score, feature_film, drama, runtime,
          mpaa_rating_R, thtr_rel_year, oscar_season, summer_season,
          imdb_rating, imdb_num_votes, critics_score, best_pic_nom,
          best_pic_win, best_actor_win, best_actress_win, best_dir_win,
          top200_box)
-
+##full model
 mod_full <- lm(audience_score ~ . - audience_score, data = movies_small)
 summary(mod_full)
-
 ## complete Bayesian model selection
-
 BIC(mod_full)
 
 #reduced model
-
 mod_reduced <- lm(audience_score ~ . - audience_score - oscar_season - summer_season
                   -imdb_num_votes -best_pic_win - best_actor_win - best_actress_win
                   -best_dir_win - top200_box, data = movies_small)
@@ -143,36 +141,52 @@ summary(mod_reduced)
 BIC(mod_reduced)
 
 ## now through stepAIC
-
 stepAIC(mod_full)
 
 ##Bayesian model averaging: multiple models are averaged to obtain posteriors of coefficients and predictions from new data
-
 # Fit the model using Bayesian linear regression, `bas.lm` function in the `BAS` package
 bma_lwage <- bas.lm(audience_score ~ . - audience_score, data = movies_small,
                    prior = "BIC", 
                    modelprior = uniform())
-
 # Print out the marginal posterior inclusion probabilities for each variable   
 ## so, the posterior probability of runtime is high, at 0.47, and crics_score, and best_pic_no
 bma_lwage
-
 # Top 5 most probably models
 summary(bma_lwage)
 
 
-##interpret the coefficients
+##model diagnostics
+library(MASS)
+library(tidyverse)
+library(statsr)
+library(BAS)
+library(broom)
+mod_full_aug <- augment(mod_full)
+ggplot(data = mod_full_aug, aes(x = .resid)) +
+  geom_histogram(binwidth = 1) +
+  xlab("Residuals")
+
+ggplot(mod_full_aug) +
+  geom_qq(aes(sample = .std.resid)) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
+  labs(x = "Theoretical quantiles", y = "Standardized residuals")
+
 ```
 
 * * *
 
 ## Part 5: Prediction
 
-NOTE: Insert code chunks as needed by clicking on the "Insert a new code chunk" 
-button above. Make sure that your code is visible in the project you submit. 
-Delete this note when before you submit your work.
 
+```{r bma_predict, cache=TRUE}
+movies.BMA <- predict(mod_full, estimator = "BPM", se.fit = TRUE)
+fitted = movies.BMA$fit
+as.vector(fitted)
+```
 * * *
 
 ## Part 6: Conclusion
 
+
+
+Write the conclusion here
