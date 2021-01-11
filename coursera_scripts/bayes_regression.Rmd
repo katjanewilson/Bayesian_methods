@@ -204,7 +204,9 @@ and earnings?
 </div>
 
 ```{r Q-SLR}
-# Type your code for Question 3 here.
+m_wage_educ <- lm(wage ~ educ, data = wage)
+tidy(m_wage_educ)
+confint(m_wage_educ)
 ```
 
 ## Model diagnostics
@@ -286,7 +288,19 @@ your answer to the previous exercise change?
 </div>
 
 ```{r E2-educ-resid}
-# Type your code for Exercise 1 here.
+m_wage_educ_aug <- augment(m_wage_educ)
+ggplot(data = m_wage_educ_aug, aes(x = .fitted, y = .resid)) +
+  geom_point(alpha = 0.6) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(x = "Fitted values", y = "Residuals")
+ggplot(data = m_wage_educ_aug, aes(x = .resid)) +
+  geom_histogram(binwidth = 100) +
+  xlab("Residuals")
+ggplot(m_wage_educ_aug) +
+  geom_qq(aes(sample = .std.resid)) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
+  labs(x = "Theoretical quantiles", y = "Standardized residuals")
+
 ```
 
 ## Linear Regression After Transforming `wage`
@@ -300,6 +314,7 @@ transformed model.
 
 ```{r lwage-iq-model}
 m_lwage_iq = lm(lwage ~ iq, data = wage)
+
 ```
 
 <div class="exercise">
@@ -308,7 +323,18 @@ residuals reasonable?
 </div>
 
 ```{r E-log-resid}
-# Type your code for Exercise 2 here.
+m_wage_educ_aug <- augment(m_lwage_iq)
+ggplot(data = m_wage_educ_aug, aes(x = .fitted, y = .resid)) +
+  geom_point(alpha = 0.6) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(x = "Fitted values", y = "Residuals")
+ggplot(data = m_wage_educ_aug, aes(x = .resid)) +
+  geom_histogram(binwidth = 100) +
+  xlab("Residuals")
+ggplot(m_wage_educ_aug) +
+  geom_qq(aes(sample = .std.resid)) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
+  labs(x = "Theoretical quantiles", y = "Standardized residuals")
 ```
 
 <div class="exercise">
@@ -442,6 +468,7 @@ predictors; let's take a look at multiple regression before removing any cases.
 
 ```{r full-lwage-model}
 m_lwage_full <- lm(lwage ~ . - wage, data = wage)
+summary(m_lwage_full)
 ```
 
 The use of `. - wage` in the `lm` function tells R to include all covariates in 
@@ -463,6 +490,20 @@ is reasonable and use the 663 complete observations (as opposed to the original
 935) to fit the model. Both Bayesian and frequentist methods exist to handle 
 data sets with missing data, but they are beyond the scope of this course. 
 
+and then solve for  $k$ using the normal quantile function.
+
+```{r}
+n <- nrow(wage)
+(prob_obs_not_outlier <- 0.95^(1/n))
+(newk <- qnorm(0.5 + 0.5 * prob_obs_not_outlier))
+```
+
+The function `Bayes.outlier` can also calculate `k` internally if we specify 
+the prior probability of there being no outliers in the sample:
+
+```{r no-outliers-in-sample}
+outliers <- Bayes.outlier(m_lwage_iq, prior.prob=0.95)
+```
 <div class="question">
 From the model, all else begin equal, who would you expect to make more: a 
 married black man or a single non-black man?
@@ -472,7 +513,10 @@ married black man or a single non-black man?
 </div>
 
 ```{r Q7}
-# Type your code for Question 7 here.
+# Type your code for Question 7 here:
+
+# this feels like a trap
+
 ```
 
 As you can see from a quick summary of the full linear model, many coefficients  of independent variables are not statistically significant. In previous labs 
@@ -510,7 +554,8 @@ Elimination of which variable from the full model yielded the lowest BIC?
 </div>
 
 ```{r Q7-BIC}
-# Type your code for Question 8 here.
+m_lwage_nobrthord <- lm(lwage ~ . - wage - brthord, data = na.omit(wage))
+BIC(m_lwage_nobrthord)
 ```
 
 <div class="exercise">
@@ -588,7 +633,7 @@ of siblings, birth order, and parental education.
 
 ```{r rem-vars-wage}
 wage_red <- wage %>%
-  select(-wage, -sibs, -brthord, -meduc, -feduc)
+  dplyr::select(-wage, -sibs, -brthord, -meduc, -feduc)
 ```
 
 Let's use BMA with the Zellner-Siow prior on the regression coefficients:
@@ -610,7 +655,11 @@ the following variables has the lowest marginal posterior inclusion probability?
 </div>
 
 ```{r Q9-reduced-BMA}
-# Type your code for Question 9 here.
+# Print out the marginal posterior inclusion probabilities for each variable                
+bma_lwage_red
+
+# Top 5 most probably models
+summary(bma_lwage_red)
 ```
 
 <div class="question">
