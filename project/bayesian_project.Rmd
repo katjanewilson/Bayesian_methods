@@ -1,6 +1,11 @@
-## Title of Project
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+## Movie Popularity Prediction
 
-In this project, I evaluated the....
+What makes a movie popular? The question is important for movie executives, online marketers, and social media companies, all who have a stake in promoting and partnering with the top movies of a season. In this project, I predict audience score based on a variety of variables about a random sample of movies from Rotten Tomatoes and IMDB. 
 
 
 ```{r load-packages, message=FALSE, warning=FALSE, include=FALSE}
@@ -23,11 +28,13 @@ load("raw/movies.Rdata")
 
 ## Part 1: Data
 
-Explain how the data is collected here
+The data is a random sample of 651 movies released before 2016. With all requirements of randomization being justified, we can assume that this is representative of the population of movies that have Rotten Tomatoes and IMBD pages. This means that we can better make arguments about generalizability (only to this specific population of movies released before 2016, not after, through), and to association, but not causality. If we were interested in causality, we might want to amp up the methods and pursue something like matching, which could control for a variety of covariates in the model.
 
 * * *
 
 ## Part 2: Data manipulation
+
+First, I mutate, or create, new variables based on features that make more sense for the question at hand.
 
 
 ```{r data_manip, echo=TRUE, message=FALSE, warning=FALSE}
@@ -43,9 +50,11 @@ movies <- movies %>%
 
 * * *
 
-## Part 3.1: Exploratory data analysis: Plots
+## Part 3: Exploratory data analysis
 
-Explain it here
+Audience score is normally distributed, and this normality holds for feature films. For non feature films, however, the audience score is more bi-modal, indicating that they are usually either "good" or "bad". The same observation is reflected in the five number summary, where feature films have a lower minimum and mean value than non-feature films. A simmilar trend holds for drama and non-drama films, where audience score for drama films is normally distributed, but for non-drama films, is bimodal, reflecting that the tendancy might be for people to rate them as either good or bad. On the other hand, R rated films are the ones that are bi-modal, where as not-R rated films are normal. 
+
+The numerical variable of critics score is expectadely linearly associated, though not too strong, with audience score. The correlation between critics score and audience score is 0.70, which is moderate to strong, so we can certainly use this as a predictor. As for the collinearlity among features in the dat set, imdb_score is highly correlated with critics score, at 0.76, so we might not want to keep both of these variables in the set. 
 
 ```{r exploratory}
 # distribution of outcome
@@ -64,6 +73,8 @@ p3 <- ggplot(data = not_feature_films, aes(x = audience_score)) +
   geom_histogram(binwidth = 5) +
   ggtitle("Not feature films")
 grid.arrange(p1, p2, p3, nrow = 1)
+summary(feature_films$audience_score)
+summary(not_feature_films$audience_score)
 
 #distribution of outcome for dramas
 drama_films = filter(movies, drama == 'yes')
@@ -86,41 +97,33 @@ p2 <- ggplot(data = not_R_rated_films, aes(x = audience_score)) +
   geom_histogram(binwidth = 5) +
   ggtitle("Not R rated films")
 grid.arrange(p1, p2, nrow = 1)
-```
 
 
+ggplot(data = movies, aes(x = critics_score, y = audience_score)) +
+  geom_point()
 
-## Part 3.2: Exploratory data analysis: Summary Stats
-
-Explain it here
-
-```{r exploratory1}
-# summary statistics
-
-movies %>% group_by(feature_film) %>%
-  summarise(mean = mean(audience_score))
-movies %>% group_by(drama) %>%
-  summarise(mean = mean(audience_score))
-movies %>% group_by(mpaa_rating_R) %>%
-  summarise(mean = mean(audience_score))
-
-
+cor(movies$audience_score, movies$critics_score)
+numericals <- movies %>%
+  dplyr::select(audience_score, runtime, thtr_rel_year,
+         imdb_rating, imdb_num_votes, critics_score) %>%
+  na.omit()
+numericals$runtime <- as.numeric(numericals$runtime)
+cor(numericals)
 ```
 
 * * *
 
 ## Part 4: Modeling
 
+From the full model, we want to take out oscar season and top 200 box_yes. This has the effect of reducing the BIC from 4934 to 4922. We can continue removing predictor variables until we find the lowest BIC, which in this case would be a BIC of 4872, in the most parsmionious model that has only two predictors, which are imbd_rating and critics_score. Then, using the step AIC, I evaluate the model with the lowest AIC value, which has a BIC of 4890, and includes the variables of critics_score and imbd_rating, but additionally has the variables of R rating and best_pic_no.
+
+Using this model, I evaluate the marginal posterior inclusion probabilities for each variable. The probability of runtime is high at .48, and the others might not seem high, but are higher than the probability of such predictors without a model.As an additional note, model assumptions, such as normality, are met through the analysis.
+
 
 ```{r data_manip2}
 
 ## develop a Bayesian regression model to predict audience score from the explanatory variables
-## simple linear regression
-##plot
-# ggplot(data = movies, aes(x = critics_score, y = audience_score)) +
-#   geom_point()
-##create a small dataset
-
+## create a small data set
 movies_small <- movies %>%
   dplyr::select(audience_score, feature_film, drama, runtime,
          mpaa_rating_R, thtr_rel_year, oscar_season, summer_season,
@@ -133,19 +136,47 @@ summary(mod_full)
 ## complete Bayesian model selection
 BIC(mod_full)
 
-#reduced model
-mod_reduced <- lm(audience_score ~ . - audience_score - oscar_season - summer_season
-                  -imdb_num_votes -best_pic_win - best_actor_win - best_actress_win
-                  -best_dir_win - top200_box, data = movies_small)
+#reduced model 1
+mod_reduced <- lm(audience_score ~ . - oscar_season - top200_box, data = movies_small)
 summary(mod_reduced)
 BIC(mod_reduced)
+
+#reduced model 2
+mod_reduced2 <- lm(audience_score ~ . - oscar_season - top200_box
+                  - best_dir_win - summer_season - imdb_num_votes, data = movies_small)
+summary(mod_reduced2)
+BIC(mod_reduced2)
+
+#reduced model 3
+mod_reduced3 <- lm(audience_score ~ . - oscar_season - top200_box
+                  - best_dir_win - summer_season - imdb_num_votes
+                  - best_actor_win - best_actress_win, data = movies_small)
+summary(mod_reduced3)
+BIC(mod_reduced3)
+
+#reduced model 4
+mod_reduced4 <- lm(audience_score ~ . - oscar_season - top200_box
+                  - best_dir_win - summer_season - imdb_num_votes
+                  - best_actor_win - best_actress_win - feature_film 
+                  - drama - runtime - best_pic_nom - best_pic_win - thtr_rel_year
+                  -mpaa_rating_R
+                  , data = movies_small)
+summary(mod_reduced4)
+BIC(mod_reduced4)
 
 ## now through stepAIC
 stepAIC(mod_full)
 
+## with the lowest AIC fit
+aic_fit_model <- lm(audience_score ~ runtime + mpaa_rating_R + thtr_rel_year + imdb_rating + 
+    critics_score + best_pic_nom + best_actor_win + best_actress_win, data = movies_small)
+summary(aic_fit_model)
+BIC(aic_fit_model)
+
 ##Bayesian model averaging: multiple models are averaged to obtain posteriors of coefficients and predictions from new data
 # Fit the model using Bayesian linear regression, `bas.lm` function in the `BAS` package
-bma_lwage <- bas.lm(audience_score ~ . - audience_score, data = movies_small,
+bma_lwage <- bas.lm(audience_score ~ runtime + mpaa_rating_R + thtr_rel_year + imdb_rating + 
+    critics_score + best_pic_nom + best_actor_win + best_actress_win, data = movies_small,
                    prior = "BIC", 
                    modelprior = uniform())
 # Print out the marginal posterior inclusion probabilities for each variable   
@@ -173,12 +204,27 @@ ggplot(mod_full_aug) +
 
 ```
 
+
+## Part 4.2: Interpretation of Final Model
+
+In the final model, then a one point increase in imdb_rating is associated with a 15b point increase in audience score. Runtime is negatively associated, where longer movies have less audience score. 
+
+```{r bma_predict, cache=TRUE}
+
+## with the lowest AIC fit
+aic_fit_model <- lm(audience_score ~ runtime + mpaa_rating_R + thtr_rel_year + imdb_rating + 
+    critics_score + best_pic_nom + best_actor_win + best_actress_win, data = movies_small)
+summary(aic_fit_model)
+```
+
 * * *
 
 ## Part 5: Prediction
 
+Finally, I predict the score of movies in the dataset and evluate the difference in the predictions. Although I do not have access to other movies not in the dataset, what I would have done to answer this is scrape data from IMBD for a movie that is past the 2016 release date, and then predict it's audience score using the variables of runtime, imbd_rating, etc., using the above regression model.
 
-```{r bma_predict, cache=TRUE}
+
+```{r bma_predict2, cache=TRUE}
 movies.BMA <- predict(mod_full, estimator = "BPM", se.fit = TRUE)
 fitted = movies.BMA$fit
 as.vector(fitted)
@@ -187,6 +233,10 @@ as.vector(fitted)
 
 ## Part 6: Conclusion
 
+What makes a good movie? Well, apparently it depends on what you define "good" to be. If we, as a company, are trying to optimize audience score, then different variables might be used in the prediction than if we were trying to optimize critics score, or probaiblity of recieving an oscar.
 
+In this analysis, we focused on the former. That is, our intention is to build a prediction model that predicts audience score from a host of variables. While the most parsimonious model (with the lowest BIC), only included the two predictors of imbd_rating and critics_score, this might not be the best model, since it is leaving out variable information we have in other predictors. Additionally, imbd_rating and ceritics_score were highly correlated, as we saw from the initial descriptive statistics, and multi-collinearity might be resulting in a biased model.
 
-Write the conclusion here
+Therefore, I choose to go with a model that might be a little bit more complex, and sacrifice some BIC, but on the other hand, will take into account other predictors that are still signifiantly associated with the outcome of audience score. By doing so, I actually increase the R squared value, meaning that these additional predictors explain more variation in the outcome of audience score. The lesson here is that parsimony is not always best.
+
+Besides those statistical limitations of the analysis, shortcomings include a limited set of variables and the lack of a testing dataset to run predictions on. If I were to continue this research in the future, I'd again think about comparing the model to a different dependent, or outcome variable. What makes a movie "good" might be based on the box office monetary value, or the number of DVDs sold, rather than audience rating, which might be more subjective.
