@@ -1,0 +1,146 @@
+### Comparing Uniform Prior and Posterior for Theta_B ###
+theta.b <- ppoints(1000)
+theta.b
+?dbeta
+posterior <- dbeta(theta.b,27,23)
+posterior
+plot(theta.b,posterior,type="l",col=2,lwd=2,main=expression(paste("Distribution of ",theta[B])),xlab=expression(theta[B]),ylab="Density")
+lines(theta.b,rep(1,1000),type="l",col=1,lwd=2)
+legend(0.75,5,c("prior","posterior"),col=c(1,2),lwd=2)
+
+### Comparing Different Priors for Theta_B ###
+density.unif <- dbeta(theta.b,1,1)
+density.jeff <- dbeta(theta.b,1/2,1/2)
+density.neut <- dbeta(theta.b,1/3,1/3)
+density.impr <- dbeta(theta.b,0,0)  ## error!
+density.impr
+density.impr <- dbeta(theta.b,0.000001,0.000001)
+
+mindensity <- min(density.unif,density.jeff,density.neut,density.impr)
+maxdensity <- max(density.unif,density.jeff,density.neut,density.impr)
+plot(theta.b,density.unif,type="l",col="black",lwd=2,main=expression(paste("Prior Distributions for ",theta[B])),xlab=expression(theta[B]),ylab="Density",ylim=c(mindensity,maxdensity))
+lines(theta.b,density.jeff,type="l",col="blue",lwd=2)
+lines(theta.b,density.neut,type="l",col="red",lwd=2)
+lines(theta.b,density.impr,type="l",col="green",lwd=2)
+legend(0.4,25,c("Beta(1,1)","Beta(1/2,1/2)","Beta(1/3,1/3)","Beta(0,0)"),col=c("black","blue","red","green"),lwd=2)
+
+#### Comparing Posterior for Different Priors for Small Dataset ###
+#### Small Dataset: 2 successes, 1 failures
+
+numsucc <- 2
+numfail <- 1
+theta.mle <- numsucc/(numsucc+numfail)
+theta.b <- ppoints(1000)
+posterior.unif <- dbeta(theta.b,numsucc+1,numfail+1)
+posterior.jeff <- dbeta(theta.b,numsucc+1/2,numfail+1/2)
+posterior.neut <- dbeta(theta.b,numsucc+1/3,numfail+1/3)
+posterior.impr <- dbeta(theta.b,numsucc+0.000001,numfail+0.000001)
+minpost <- min(posterior.unif,posterior.jeff,posterior.neut,posterior.impr)
+maxpost <- max(posterior.unif,posterior.jeff,posterior.neut,posterior.impr)
+plot(theta.b,posterior.unif,type="l",col="black",lwd=2,main=expression(paste("Posterior Distributions for ",theta[B])),xlab=expression(theta[B]),ylab="Density",ylim=c(minpost,maxpost))
+lines(theta.b,posterior.jeff,type="l",col="blue",lwd=2)
+lines(theta.b,posterior.neut,type="l",col="red",lwd=2)
+lines(theta.b,posterior.impr,type="l",col="green",lwd=2)
+legend(0.05,2,c("Beta(1,1)","Beta(1/2,1/2)","Beta(1/3,1/3)","Beta(0,0)"),col=c("black","blue","red","green"),lwd=2)
+abline(v=theta.mle)
+
+
+### Comparing Posterior for Different Priors for Teal v. Connecticut Blacks Data ###
+
+numsucc <- 26
+numfail <- 22
+
+theta.mle <- numsucc/(numsucc+numfail)
+
+theta.b <- ppoints(1000)
+posterior.unif <- dbeta(theta.b,numsucc+1,numfail+1)
+posterior.jeff <- dbeta(theta.b,numsucc+1/2,numfail+1/2)
+posterior.neut <- dbeta(theta.b,numsucc+1/3,numfail+1/3)
+posterior.impr <- dbeta(theta.b,numsucc+0.000001,numfail+0.000001)
+minpost <- min(posterior.unif,posterior.jeff,posterior.neut,posterior.impr)
+maxpost <- max(posterior.unif,posterior.jeff,posterior.neut,posterior.impr)
+plot(theta.b,posterior.unif,type="l",col="black",lwd=2,main=expression(paste("Posterior Distributions for ",theta[B])),xlab=expression(theta[B]),ylab="Density",ylim=c(minpost,maxpost))
+lines(theta.b,posterior.jeff,type="l",col="blue",lwd=2)
+lines(theta.b,posterior.neut,type="l",col="red",lwd=2)
+xlines(theta.b,posterior.impr,type="l",col="green",lwd=2)
+legend(0.05,5,c("Beta(1,1)","Beta(1/2,1/2)","Beta(1/3,1/3)","Beta(0,0)"),col=c("black","blue","red","green"),lwd=2)
+abline(v=theta.mle)
+
+
+### Comparing Posterior for Theta_B and Posterior for Theta_W ###
+### Using Uniform(0,1) = Beta(1,1) Prior
+
+theta <- ppoints(1000)
+posterior.theta.b <- dbeta(theta,27,23)
+posterior.theta.w <- dbeta(theta,207,54)
+plot(theta,posterior.theta.w,type="l",col=4,lwd=2,main=expression(paste("Comparing Posteriors of ",theta[B]," to ",theta[W])),xlab=expression(theta),ylab="Density")
+lines(theta,posterior.theta.b,type="l",col=2,lwd=2)
+lines(theta,rep(1,1000),type="l",col=1,lwd=2)
+legend(0,10,c("Prior",expression(paste("Posterior: ",theta[B])),expression(paste("Posterior: ",theta[W]))),col=c(1,2,4),lwd=2)
+
+### Simulating values to calculate posterior probability ###
+
+theta.b.samp <- rbeta(10000,27,23)
+theta.w.samp <- rbeta(10000,207,54)
+plot(theta.b.samp,theta.w.samp,xlim=c(0,1),ylim=c(0,1))
+abline(0,1,col="red")
+postprob <- sum(theta.b.samp < theta.w.samp)/10000
+postprob
+
+### Simulating values from posterior predictive distribution ###
+
+theta.b.samp <- rbeta(10000,27,23)
+ystar.b.samp <- rbinom(10000,100,theta.b.samp)
+hist(ystar.b.samp,main="Posterior Predictive Distribution of y*",xlab="y*",col="gray")
+
+### Comparing posterior predictive distribution to Binomial based on MLE ###
+
+theta.b.mle <- 26/48
+ystar.alt.samp <- rbinom(10000,100,theta.b.mle)
+par(mfrow=c(2,1))
+hist(ystar.b.samp,main="Posterior Predictive Distribution of y*",xlim=c(0,100),col="gray",xlab="y*")
+hist(ystar.alt.samp,main="Parametric Bootstrap Distribution of y*",xlim=c(0,100),col="gray",xlab="y*")
+
+
+
+##### reading in Poisson data ####
+
+data <- read.table("data/planes.txt",header=T)
+attach(data)
+
+hist(fatal)
+
+sumfatal <- sum(fatal)
+n <- length(fatal)
+
+
+##### looking at different Gamma priors #####
+theta <- ppoints(1000)*40
+gammaprior1 <- dgamma(theta,shape=200,rate=10)
+gammaprior2 <- dgamma(theta,shape=1,rate=0.0001)
+gammaprior3 <- dgamma(theta,shape=1/2,rate=0.0001)
+gammaprior4 <- dgamma(theta,shape=1/3,rate=0.0001)
+minplot <- min(gammaprior1,gammaprior2,gammaprior3,gammaprior4)
+maxplot <- max(gammaprior1,gammaprior2,gammaprior3,gammaprior4)
+par(mfrow=c(1,1))
+plot(theta,gammaprior1,type="l",ylim=c(minplot,maxplot),lwd=2,ylab="")
+lines(theta,gammaprior2,col=2,lwd=2)
+lines(theta,gammaprior3,col=3,lwd=2)
+lines(theta,gammaprior3,col=4,lwd=2)
+legend('topright',c("Gamma(200,10)","Gamma(1,0)","Gamma(1/2,0)","Gamma(1/3,0)"),col=c(1,2,3,4),lwd=2)
+
+##### looking at posterior for all these different priors #####
+gammaposterior1 <- dgamma(theta,shape=(sumfatal+200),rate=(n+10))
+gammaposterior2 <- dgamma(theta,shape=(sumfatal+1),rate=(n+0.0001))
+gammaposterior3 <- dgamma(theta,shape=(sumfatal+1/2),rate=(n+0.0001))
+gammaposterior4 <- dgamma(theta,shape=(sumfatal+1/3),rate=(n+0.0001))
+minplot <- min(gammaposterior1,gammaposterior2,gammaposterior3,gammaposterior4)
+maxplot <- max(gammaposterior1,gammaposterior2,gammaposterior3,gammaposterior4)
+hist(fatal,xlim=c(0,40),ylim=c(minplot,maxplot),prob=T,col="gray",xlab="",ylab="",main="")
+par(new=T)
+plot(theta,gammaposterior1,type="l",xlim=c(0,40),ylim=c(minplot,maxplot),lwd=2,xlab="",ylab="",main="")
+lines(theta,gammaposterior2,col=2,lwd=2)
+lines(theta,gammaposterior3,col=3,lwd=2)
+lines(theta,gammaposterior4,col=4,lwd=2)
+legend("topright",c("Gamma(200,10)","Gamma(1,0)","Gamma(1/2,0)","Gamma(1/3,0)"),col=c(1:4),lwd=2)
+

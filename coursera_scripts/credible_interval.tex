@@ -1,0 +1,741 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{longtable,booktabs}
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+
+\author{}
+\date{\vspace{-2.5em}}
+
+\begin{document}
+
+Complete all \textbf{Exercises}, and submit answers to
+\textbf{Questions} in the \textbf{Quiz: Week 2 Lab} on Coursera.
+
+\hypertarget{getting-started}{%
+\subsection{Getting Started}\label{getting-started}}
+
+\hypertarget{load-packages}{%
+\subsubsection{Load packages}\label{load-packages}}
+
+In this lab we will explore some basic Bayesian inference using
+conjugate priors and credible intervals to examine some categorical and
+count data from the \href{http://www.cdc.gov/brfss/}{CDC's Behavioral
+Risk Factor Surveillance System} (BRFSS). A subset of these data from
+2013 have been made available in the \texttt{statsr} package, as usual
+we will first load the package and then the data set.
+
+Let's load the package,
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(statsr)}
+\KeywordTok{data}\NormalTok{(brfss)}
+\end{Highlighting}
+\end{Shaded}
+
+This data set contains 5000 observations of 6 variables:
+
+\begin{longtable}[]{@{}ll@{}}
+\toprule
+\begin{minipage}[b]{0.25\columnwidth}\raggedright
+variable\strut
+\end{minipage} & \begin{minipage}[b]{0.69\columnwidth}\raggedright
+description\strut
+\end{minipage}\tabularnewline
+\midrule
+\endhead
+\begin{minipage}[t]{0.25\columnwidth}\raggedright
+\texttt{weight}\strut
+\end{minipage} & \begin{minipage}[t]{0.69\columnwidth}\raggedright
+Respondent's weight in pounds.\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.25\columnwidth}\raggedright
+\texttt{height}\strut
+\end{minipage} & \begin{minipage}[t]{0.69\columnwidth}\raggedright
+Respondent's height in inches.\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.25\columnwidth}\raggedright
+\texttt{sex}\strut
+\end{minipage} & \begin{minipage}[t]{0.69\columnwidth}\raggedright
+Respondent's sex\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.25\columnwidth}\raggedright
+\texttt{exercise}\strut
+\end{minipage} & \begin{minipage}[t]{0.69\columnwidth}\raggedright
+Has the respondent exercised in the last 30 days\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.25\columnwidth}\raggedright
+\texttt{fruit\_per\_day}\strut
+\end{minipage} & \begin{minipage}[t]{0.69\columnwidth}\raggedright
+How many servings of fruit does the respondent consume per day\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.25\columnwidth}\raggedright
+\texttt{vege\_per\_day}\strut
+\end{minipage} & \begin{minipage}[t]{0.69\columnwidth}\raggedright
+How many servings of dark green vegetables does the respondent consume
+per day\strut
+\end{minipage}\tabularnewline
+\bottomrule
+\end{longtable}
+
+\hypertarget{credible-interval-calculator}{%
+\subsection{Credible Interval
+Calculator}\label{credible-interval-calculator}}
+
+Recall that probability distribution (prior/posterior distribution) of a
+parameter that describes the distribution of the data is given by:
+
+\[\begin{align*}
+\text{Beta distribution} ~-~ & \pi(p; \alpha, \beta) = \text{Beta}(\alpha, \beta)\\
+\text{Gamma distribution} ~-~ & \pi(\lambda; \alpha, \beta) = \text{Gamma}(\alpha, \beta)\\
+\text{Normal distribution} ~-~ & \pi(\mu; \nu, \tau) = \mathscr{N}(\nu, \tau)
+\end{align*}\]
+
+Here, \(p\), \(\lambda\), and \(\mu\) are the variables of their own
+distributions (the values of them define the distributions of the data),
+and other parameters such as \(\alpha,\ \beta,\ \nu\), and \(\tau\) are
+the parameters of the distributions of \(p\), \(\lambda\), and \(\mu\).
+
+(\textbf{Note:} In this lab, we use the following definition of Gamma
+distribution:
+\[ \pi(\lambda; \alpha, \beta) = \text{Gamma}(\alpha, \beta) = \frac{\beta^\alpha}{\Gamma(\alpha)}\lambda^{\alpha-1}e^{-\beta\lambda}\]
+This definition of the Gamma distribution is different from the one
+introduced in the video lecture.)
+
+Below is an interactive app for visualizing posterior distributions and
+credible intervals of \(p\), \(\lambda\), and \(\mu\) given different
+values of parameters. We will use this app to explore how both our
+choice of prior distribution, as well as our data, affect the posterior
+distribution and the credible interval for \(p\), \(\lambda\), and
+\(\mu\).
+
+Note that this app assumes you now the posterior distribution as well as
+the parameters of this distribution. In the remainder of the lab we will
+walk you through how to calculate the posterior distribution in the
+Beta-Binomial Conjugacy and the Gamma-Poisson Conjugacy cases based on
+real world data from \texttt{BRFSS}. Then you will be asked to calculate
+the credible interval using codes similar to the one shown under the
+graph of the app.
+
+First, let us do some exercises to learn how to use this app.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{credible_interval_app}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Error in credible_interval_app(): Shiny app will only run when built within RStudio.
+\end{verbatim}
+
+Suppose the posterior distribution of \(\mu\) follows a Normal
+distribution with mean 10 and variance 5. Which of the following are the
+bounds of a 95\% credible interval for \(\mu\)? Answer this question
+using the app.
+
+\begin{itemize}
+\tightlist
+\item
+  (-1.96, 1.96)
+\item
+  (0.419, 0.872)
+\item
+  (0.959, 3.417)
+\item
+  (5.618, 14.382)
+\end{itemize}
+
+Confirm your answer by running the code given below the distribution
+plot in the app.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{qnorm}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\FloatTok{0.025}\NormalTok{, }\FloatTok{0.975}\NormalTok{), }\DataTypeTok{mean =} \DecValTok{10}\NormalTok{, }\DataTypeTok{sd =} \FloatTok{2.236}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1]  5.617521 14.382479
+\end{verbatim}
+
+Suppose the posterior distribution of \(p\) follows a Beta distribution
+with \(\alpha = 2\) and \(\beta = 5\). Which of the following are the
+bounds of a 90\% credible interval for \(p\)? Answer this question using
+the app.
+
+\begin{itemize}
+\tightlist
+\item
+  (-1.678, 5.678)
+\item
+  (0.043, 0.641)
+\item
+  (0.063, 0.582)
+\item
+  (0.071, 0.949)
+\end{itemize}
+
+Confirm your answer by running the code given below the distribution
+plot in the app.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{qbeta}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\FloatTok{0.05}\NormalTok{, }\FloatTok{0.95}\NormalTok{), }\DataTypeTok{shape1 =} \DecValTok{2}\NormalTok{, }\DataTypeTok{shape2 =} \DecValTok{5}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.06284989 0.58180341
+\end{verbatim}
+
+Suppose the posterior distribution of \(\lambda\) follows a Gamma
+distribution with \(\alpha = 4\) and \(\beta = 8\). Which of the
+following are the bounds of a 99\% credible interval for \(\lambda\)?
+Answer this question using the app.
+
+\begin{itemize}
+\tightlist
+\item
+  (-3.284, 11.284)
+\item
+  (0.069, 0.693)
+\item
+  (0.084, 1.372)
+\item
+  (0.171, 0.969)
+\end{itemize}
+
+Confirm your answer by running the code given below the distribution
+plot in the app.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{qgamma}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\FloatTok{0.005}\NormalTok{, }\FloatTok{0.995}\NormalTok{), }\DataTypeTok{shape =} \DecValTok{4}\NormalTok{, }\DataTypeTok{rate =} \DecValTok{8}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.08402582 1.37218469
+\end{verbatim}
+
+\hypertarget{beta-binomial-conjugacy}{%
+\subsection{Beta-Binomial Conjugacy}\label{beta-binomial-conjugacy}}
+
+As we discussed in the videos, the Beta distribution is conjugate to the
+Binomial distribution - meaning that if we use a Beta prior for the
+parameter \(p\) of the Binomial distribution then the posterior
+distribution of \(p\) after observing data will be another Beta
+distribution.
+
+\[ \pi(p) = \text{Beta}(a, b) \]
+\[ x\,|\,n,p ~\sim~ \text{Binom}(n,p) \]
+\[ p \,|\, x,n ~\sim~ \text{Beta}(\alpha, \beta).\]
+
+Our goal with inference in general is to take specific observations
+(data) and use them to make useful statements about unknown population
+parameters of interest. The Beta-Binomial Conjugacy is a Bayesian
+approach for inference about a single population proportion \(p\).
+Whereas with the frequentist approach we used \(\hat{p} = x / n\) we
+will now just use \(x\) and \(n\) directly with \(x\) being the number
+of successes obtained from \(n\) identical Bernoulli trials. (A
+Bernoulli trial is a random experiment with exactly two possible
+outcomes, ``success'' and ``failure'', in which the probability of
+success is the same every time the experiment is conducted.) As such, we
+can view \(x\) as a Binomial random variable with \(n\) the number of
+trials, and \(p\) the probability of success.
+
+To complete our Bayesian approach of inference, all we need is to define
+our prior beliefs for \(p\) by defining a prior distribution. Our choice
+of the prior hyperparameters (\(a\) and \(b\)) should reflect our prior
+beliefs about \(p\). In the following, we will use the term
+\textbf{hyperparameter} to define parameters of prior/posterior
+distributions, and the term \textbf{parameter} to define the unknown
+parameters of the likelihood, such as \(p\). For most conjugate
+distributions there is usually a straight forward interpretation of
+these hyperparameters as the previously observed data -- in the case of
+the Beta-Binomial Conjugacy, we can think of our hyperparameters as
+representing \(a-1\) previous successes and \(b-1\) previous failures.
+
+\hypertarget{data-and-the-updating-rule}{%
+\subsubsection{Data and the updating
+rule}\label{data-and-the-updating-rule}}
+
+We will start by performing inference on the sex ratio of respondents to
+\texttt{BRFSS}, we can define success as being \texttt{Female} and we
+would like to make some statement about the overall sex ratio of
+American adults based on our sample from \texttt{BRFSS}. We will do this
+by estimating \(p\), the true proportion of females in the American
+population, using credible intervals. For each credible interval you
+compute, always check back in with your intuition, which hopefully says
+that \(p\) should be around 0.5 since we would expect roughly 50\%
+females and 50\% males in the population.
+
+Here is the observed sex distribution in the data:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{table}\NormalTok{(brfss}\OperatorTok{$}\NormalTok{sex)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##   Male Female 
+##   2414   2586
+\end{verbatim}
+
+Let's store the relevant, total sample size and number of females, for
+use in later calculations:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{n <-}\StringTok{ }\KeywordTok{length}\NormalTok{(brfss}\OperatorTok{$}\NormalTok{sex)}
+\NormalTok{x <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(brfss}\OperatorTok{$}\NormalTok{sex }\OperatorTok{==}\StringTok{ "Female"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+For each observed data point from a Binomial (\(n\) and \(x\)) we can
+calculate the values of the posterior parameters using the following
+updating rule:
+
+\[ \alpha = a + x \] \[ \beta = b + n - x \]
+
+From the data we now have \(x = 2586\) (the number of females), and
+\(n - x = 2414\) (the number of males). We'll start with a Beta prior
+where \(a = 1\) and \(b = 1\). Remember that this is equivalent to a
+Uniform distribution. By combining the data with the prior, we arrive at
+a posterior where
+
+\[ p \,|\, x,n ~\sim~ \text{Beta}(\alpha = 1 + 2586,~ \beta = 1 + 2414) \]
+
+What is the 95\% credible interval for \(p\), the proportion of females
+in the population, based on the posterior distribution obtained with the
+updating rule shown above. Use the credible interval app to answer this
+question.
+
+\begin{itemize}
+\tightlist
+\item
+  (0.500, 0.536)
+\item
+  (0.503, 0.531)
+\item
+  (0.507, 0.530)
+\item
+  (0.468, 0.496)
+\end{itemize}
+
+Which of the following is the correct Bayesian interpretation of this
+interval?
+
+\begin{itemize}
+\tightlist
+\item
+  The probability that the true proportion of females lies in this
+  interval is either 0 or 1.
+\item
+  The probability that the true proportion of females lies in this
+  interval is 0.95.
+\item
+  95\% of the time the true proportion of females is in this interval.
+\item
+  95\% of true proportions of females are in this interval.
+\end{itemize}
+
+Let's now use a more informative prior that reflects a \textbf{stronger}
+belief that the sex ratio should be 50-50. For this, we use a Beta prior
+with hyperparameters \(a = 500\) and \(b = 500\).
+
+Confirm by plotting the following two Beta distributions
+\(\text{Beta}(a = 1, b = 1)\) and \(\text{Beta}(a = 500, b = 500)\)
+using the app above to show that the \(\text{Beta}(a = 500, b = 500)\)
+distribution is centered around 0.5 and much more narrow than the
+uniform distribution, i.e.~\(Beta(a = 1, b = 1)\).
+
+What is the 95\% credible interval for \(p\), the proportion of females
+in the population, based on a prior distribution of
+\(\text{Beta}(a = 500, b = 500)\). \textbf{Hint:} You need to determine
+the hyperparameters of the posterior distribution, then use the app to
+construct the credible interval.
+
+\begin{itemize}
+\tightlist
+\item
+  (0.498, 0.531)
+\item
+  (0.500, 0.528)
+\item
+  (0.504, 0.532)
+\item
+  (0.502, 0.527)
+\end{itemize}
+
+Let's consider one other prior distribution:
+\(\text{Beta}(a = 5, b = 200)\).
+
+Which is of the following is the center of the
+\(\text{Beta}(a = 5, b = 200)\) distribution? \textbf{Hint:} modify the
+code under the distribution plot to get the center.
+
+\begin{itemize}
+\tightlist
+\item
+  approximately 0.03
+\item
+  approximately 0.15
+\item
+  approximately 0.50
+\item
+  approximately 0.97
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{mean}\NormalTok{(}\KeywordTok{qbeta}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\FloatTok{0.025}\NormalTok{, }\FloatTok{0.975}\NormalTok{), }\DataTypeTok{shape1 =} \DecValTok{3086}\NormalTok{, }\DataTypeTok{shape2 =} \DecValTok{2914}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.5143288
+\end{verbatim}
+
+What is the 95\% credible interval for \(p\), the proportion of females
+in the population, based on a prior distribution of
+\(\text{Beta}(a = 5, b = 200)\). \textbf{Hint:} You need to determine
+the posterior distribution first, then use the app to construct the
+credible interval.
+
+\begin{itemize}
+\tightlist
+\item
+  (0.503, 0.531)
+\item
+  (0.499, 0.535)
+\item
+  (0.486, 0.509)
+\item
+  (0.484, 0.511)
+\end{itemize}
+
+In summary, when we used a prior distribution that was centered around a
+realistic value for \(p\) (the center is around 0.5), the credible
+interval we obtained was also more realistic. However when we used a
+strong prior distribution that was centered around a clearly unrealistic
+value for \(p\) (say the \(\text{Beta}(5, 200)\) prior), the credible
+interval we obtained did not match the distribution of the data (with
+the proportion of female respondents
+\(2586/(2586+2414) \approx 0.517\)). Hence, a good prior helps, however
+a bad prior can hurt your results.
+
+Next, let's turn our attention to the \texttt{exercise} variable, which
+indicates whether the respondent exercised in the last 30 days. While
+for the \texttt{sex} variable we had some intuition about the true
+proportion of females (we would expect it to be around 0.5), many of us
+probably do not have a strong prior belief about the proportion of
+Americans who exercise. In this case we would be more inclined to use a
+non-informative prior, e.g.~a uniform distribution, which says that
+\(p\) is equally likely to be anywhere between 0 and 1.
+
+Here is the observed exercise distribution in the data:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{table}\NormalTok{(brfss}\OperatorTok{$}\NormalTok{exercise)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Yes   No 
+## 3868 1132
+\end{verbatim}
+
+What is the 90\% credible interval for \(p\), the proportion of
+Americans who exercise, based on a uniform prior distribution?
+
+\begin{itemize}
+\tightlist
+\item
+  (0.762, 0.785)
+\item
+  (0.764, 0.783)
+\item
+  (0.718, 0.737)
+\item
+  (0.758, 0.789)
+\end{itemize}
+
+\hypertarget{gamma-poisson-conjugacy}{%
+\subsection{Gamma-Poisson Conjugacy}\label{gamma-poisson-conjugacy}}
+
+Since the Poisson distribution describes the number of counts in a given
+interval, we will use this distribution to model the
+\texttt{fruit\_per\_day} variable which records the servings of fruit
+the respondents consume per day. The Poisson distribution has a single
+parameter, \(\lambda\), which is the expected number of counts per time
+period.
+
+The Gamma-Poisson conjugacy is another example of conjugate families
+where we use the Gamma distribution as the prior for the count parameter
+\(\lambda\). In this lab, we use the following definition of Gamma
+distribution:
+\[ \pi(\pi; \alpha, \beta) = \text{Gamma}(\alpha, \beta) = \frac{\beta^\alpha}{\Gamma(\alpha)}\lambda^{\alpha-1}e^{-\beta\lambda}\]
+
+With Bayes' Rule and the likelihood which is given by the Poisson
+distribution, we will get a Gamma posterior for \(\lambda\).
+
+\[ \pi(\lambda) = \text{Gamma}(a,b) \]
+\[ x\,|\,\lambda ~\sim~ \text{Poisson}(\lambda) \]
+\[ \lambda \,|\, x ~\sim~ \text{Gamma}(\alpha,\beta).\]
+
+Once again, our choice of the prior parameters (\(a\) and \(b\)) should
+reflect our prior beliefs about the parameter \(\lambda\). In the case
+of the Gamma-Poisson conjugacy, we can view \(a\) as the number of total
+counts and \(b\) as the prior number of observations. For example,
+setting \(a = 12\) and \(b = 3\) reflects a belief based on data that 3
+respondents on average consume a total of 12 fruits per day. At a first
+glance, this might sound equivalent to setting \(a = 4\) and \(b = 1\)
+or \(a = 120\) and \(b = 30\), however these three distributions,
+\(Gamma(a = 4, b = 1)\), \(Gamma(a = 12, b = 3)\), and
+\(Gamma(a = 120, b = 30)\), while they all have the same expected value
+4, differ in their spreads which indicates a different degree of belief
+about the parameter \(\lambda\).
+
+Use the app to plot the following three prior Gamma distributions,
+\(Gamma(a = 4, b = 1)\), \(Gamma(a = 12, b = 3)\), and
+\(Gamma(a = 120, b = 30)\). Confirm that they all have the same center
+but different spreads. Order them in ascending order of spreads, from
+least to most variable.
+
+\hypertarget{data-and-the-updating-rule-1}{%
+\subsubsection{Data and the updating
+rule}\label{data-and-the-updating-rule-1}}
+
+For each observed data point from the Poisson distribution (\(x\)) we
+can calculate the values of the posterior parameters using the following
+updating rule:
+
+\[ \alpha = a + x \] \[ \beta = b + 1 \]
+
+However in this case we have 5000 observations and we would like to
+avoid updates every single count individually. As we saw last week, we
+can use our subsequentially updated posterior as a new prior. As such, a
+more general multi-observation updating rule is
+
+\[ \alpha = a + \sum_{i = 1}^n x_i \] \[ \beta = b + n \]
+
+Using the multi-observation updating rule, what should the posterior
+distribution be when the hyperparameters of the Gamma prior are
+\(a = 4\) and \(b = 1\), and we have observed the data
+\(x = \{2, 3, 4, 5, 4\}\).
+
+\begin{itemize}
+\tightlist
+\item
+  Gamma(\(a = 22\), \(b = 6\))
+\item
+  Gamma(\(a = 18\), \(b = 5\))
+\item
+  Gamma(\(a = 18\), \(b = 6\))
+\item
+  Gamma(\(a = 19\), \(b = 8\))
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Type your code for Question 10 here.}
+\end{Highlighting}
+\end{Shaded}
+
+The government recommends that Americans consume approximately 5
+servings of fruits per day. Which of the following represents a weak
+prior that Americans on average follow this recommendation?
+
+\begin{itemize}
+\tightlist
+\item
+  Gamma(\(a = 1\), \(b = 5\))
+\item
+  Gamma(\(a = 5\), \(b = 1\))
+\item
+  Gamma(\(a = 100\), \(b = 500\))
+\item
+  Gamma(\(a = 500\), \(b = 100\))
+\end{itemize}
+
+Using the correct prior distribution from the previous question and the
+data of \texttt{fruit\_per\_day} in the \texttt{BRFSS} dataset,
+calculate the hyperparameters of the posterior distribution.
+
+\begin{itemize}
+\tightlist
+\item
+  Gamma(\(\alpha = 8114\), \(\beta = 5000\))
+\item
+  Gamma(\(\alpha = 8118\), \(\beta = 5001\))
+\item
+  Gamma(\(\alpha = 8119\), \(\beta = 5001\))
+\item
+  Gamma(\(\alpha = 8115\), \(\beta = 5005\))
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{table}\NormalTok{(brfss}\OperatorTok{$}\NormalTok{fruit_per_day)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##    0    1    2    3    4    5    6    7    8    9 
+##  519 2172 1399  650  154   73   22    8    2    1
+\end{verbatim}
+
+Using the correct posterior distribution from the previous question,
+calculate the 90\% credible interval for \(\lambda\), the expected
+number of servings of fruit Americans consume per day.
+
+\begin{itemize}
+\tightlist
+\item
+  (1.575, 1.668)
+\item
+  (1.588, 1.659)
+\item
+  (1.592, 1.651)
+\item
+  (1.594, 1.653)
+\end{itemize}
+
+Based on this result, do Americans appear to follow the government
+guidelines which recommend consuming 5 servings of fruits per day?
+
+\begin{itemize}
+\tightlist
+\item
+  Yes
+\item
+  No
+\end{itemize}
+
+Repeat the preceding analysis for number of servings of vegetables per
+day (\texttt{vege\_per\_day}), and evaluate whether Americans follow the
+government guidelines which recommend consuming 5 servings of vegetables
+per day.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Type your code for the Exercise 6 here.}
+\end{Highlighting}
+\end{Shaded}
+
+This work is licensed under
+\href{https://www.gnu.org/licenses/quick-guide-gplv3.html}{GNU General
+Public License v3.0}.
+
+\end{document}
