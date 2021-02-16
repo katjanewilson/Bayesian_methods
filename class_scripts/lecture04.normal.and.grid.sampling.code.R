@@ -170,7 +170,7 @@ abline(v=mean(ba),col=2)
 ############################################################
 
 ## input data:  
-data <- read.table("planes.txt",skip=1)
+data <- read.table("data/planes.txt",skip=1)
 y <- data[,2]
 t <- data[,1]-1976
 n <- length(y)

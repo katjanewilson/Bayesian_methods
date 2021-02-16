@@ -1,0 +1,70 @@
+---
+title: "Question 7 and 10"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 7
+
+```{r cars}
+#####
+#Question 7
+#####
+
+#a
+data <- read.table("data/planes.txt",header=T)
+attach(data)
+sumfatal <- sum(fatal)
+n <- length(fatal)
+##### looking at different Gamma priors #####
+theta <- ppoints(1000)*40
+gammaprior1 <- dgamma(theta,shape=0,rate=0)
+minplot <- min(gammaprior1)
+maxplot <- max(gammaprior1)
+plot(theta,gammaprior1,type="l",ylim=c(minplot,maxplot),lwd=2,ylab="")
+#set the prior to be stronger
+gammaprior1 <- dgamma(theta,shape=200,rate=10)
+plot(theta,gammaprior1,type="l",ylim=c(minplot,maxplot),lwd=2,ylab="")
+#set the prior to be  off
+gammaprior1 <- dgamma(theta,shape=40,rate=10)
+plot(theta,gammaprior1,type="l",ylim=c(minplot,maxplot),lwd=2,ylab="")
+## now plot the posterior distribution
+gammaposterior1 <- dgamma(theta,shape=(sumfatal+0),rate=(n+0))
+minplot <- min(gammaposterior1)
+maxplot <- max(gammaposterior1)
+hist(fatal,xlim=c(0,40),ylim=c(minplot,maxplot),prob=T,col="gray",xlab="",ylab="",main="")
+par(new=T)
+plot(theta,gammaposterior1,type="l",xlim=c(0,40),ylim=c(minplot,maxplot),lwd=2,xlab="",ylab="",main="")
+legend("topright",c("Gamma(0,0)"),col=c(1:4),lwd=2)
+
+
+#b
+###use samples from the posterior distribution to obtain samples from the
+#posterior predictive distribution
+gammaposterior1 <- dgamma(theta,shape=(sumfatal+0),rate=(n+0))
+minplot <- min(gammaposterior1)
+maxplot <- max(gammaposterior1)
+hist(fatal,xlim=c(0,40),ylim=c(minplot,maxplot),prob=T,col="gray",xlab="",ylab="",main="")
+par(new=T)
+plot(theta,gammaposterior1,type="l",xlim=c(0,40),ylim=c(minplot,maxplot),lwd=2,xlab="",ylab="",main="")
+legend("topright",c("Gamma(0,0)"),col=c(1:4),lwd=2)
+
+##compute a 95% interval
+
+theta <- rgamma(1000, 238)/10
+y1986 <- rpois(1000,theta)
+print(sort(y1986)[c(25,976)])
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

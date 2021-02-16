@@ -1,0 +1,191 @@
+---
+title: "Question 7 and 10"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 7
+
+```{r cars}
+#####
+#Question 7
+#####
+
+#a
+data <- read.table("data/planes.txt",header=T)
+attach(data)
+sumfatal <- sum(fatal)
+n <- length(fatal)
+##### looking at different Gamma priors #####
+theta <- ppoints(1000)*40
+gammaprior1 <- dgamma(theta,shape=0,rate=0)
+minplot <- min(gammaprior1)
+maxplot <- max(gammaprior1)
+plot(theta,gammaprior1,type="l",ylim=c(minplot,maxplot),lwd=2,ylab="")
+#set the prior to be stronger
+gammaprior1 <- dgamma(theta,shape=200,rate=10)
+plot(theta,gammaprior1,type="l",ylim=c(minplot,maxplot),lwd=2,ylab="")
+#set the prior to be  off
+gammaprior1 <- dgamma(theta,shape=40,rate=10)
+plot(theta,gammaprior1,type="l",ylim=c(minplot,maxplot),lwd=2,ylab="")
+## now plot the posterior distribution
+gammaposterior1 <- dgamma(theta,shape=(sumfatal+0),rate=(n+0))
+minplot <- min(gammaposterior1)
+maxplot <- max(gammaposterior1)
+hist(fatal,xlim=c(0,40),ylim=c(minplot,maxplot),prob=T,col="gray",xlab="",ylab="",main="")
+par(new=T)
+plot(theta,gammaposterior1,type="l",xlim=c(0,40),ylim=c(minplot,maxplot),lwd=2,xlab="",ylab="",main="")
+legend("topright",c("Gamma(0,0)"),col=c(1:4),lwd=2)
+
+
+#b
+###use samples from the posterior distribution to obtain samples from the
+#posterior predictive distribution
+gammaposterior1 <- dgamma(theta,shape=(sumfatal+0),rate=(n+0))
+minplot <- min(gammaposterior1)
+maxplot <- max(gammaposterior1)
+hist(fatal,xlim=c(0,40),ylim=c(minplot,maxplot),prob=T,col="gray",xlab="",ylab="",main="")
+par(new=T)
+plot(theta,gammaposterior1,type="l",xlim=c(0,40),ylim=c(minplot,maxplot),lwd=2,xlab="",ylab="",main="")
+legend("topright",c("Gamma(0,0)"),col=c(1:4),lwd=2)
+
+##compute a 95% interval
+
+theta <- rgamma(1000, 238)/10
+y1986 <- rpois(1000,theta)
+print(sort(y1986)[c(25,976)])
+```
+
+
+
+
+## Question 10
+
+```{r}
+
+data <- read.table("data/planes.txt",header=T)
+attach(data)
+sumfatal <- sum(fatal)
+n <- length(fatal)
+
+
+## a. Choose a non-informative prior
+## input data:  
+data <- read.table("data/planes.txt",skip=1)
+y <- data[,2]
+t <- data[,1]-1976
+n <- length(y)
+hist(y)
+plot(t,y,pch=19)
+
+## graphing posterior over range of alpha and beta:
+posteriorplanes <- function(alpha,beta){
+  logpost <- -Inf
+  if (alpha + beta*max(t) > 0){
+    logpost <- 0
+    for (i in 1:n){
+      logpost <- logpost + y[i]*log(alpha+beta*t[i])
+      logpost <- logpost - (alpha+beta*t[i])
+    }
+  }
+  logpost
+}
+
+numgrid <- 100
+alpharange <- ppoints(numgrid)*20   # alpha between 0 and 20
+betarange <- ppoints(numgrid)*6  # beta between 0 and 6
+
+numgrid <- 100
+alpharange <- ppoints(numgrid)*20+20   # alpha between 20 and 40
+betarange <- ppoints(numgrid)*6-3  # beta between -3 and 3
+full <- matrix(NA,nrow=numgrid,ncol=numgrid)
+for (i in 1:numgrid){
+  for (j in 1:numgrid){
+    full[i,j] <- posteriorplanes(alpharange[i],betarange[j])
+  }
+}
+full <- exp(full - max(full))
+full <- full/sum(full)
+contour(alpharange,betarange,full,xlab="alpha",ylab="beta",drawlabels=F)
+
+
+## calculating probabilities for grid sampler:
+
+alphamarginal <- rep(NA,numgrid)
+for (i in 1:numgrid){
+  alphamarginal[i] <- sum(full[i,])
+}
+betaconditional <- matrix(NA,nrow=numgrid,ncol=numgrid)
+for (i in 1:numgrid){
+  for (j in 1:numgrid){
+    betaconditional[i,j] <- full[i,j]/sum(full[i,])
+  }
+}
+
+## plotting marginal distribution of alpha
+par(mfrow=c(1,1))
+plot(alpharange,alphamarginal,type="l",main="marginal dist. of alpha")
+
+## plotting conditional distribution of beta given alpha
+alpharange[25]
+alpharange[50]
+alpharange[75]
+par(mfrow=c(3,1))
+plot(betarange,betaconditional[25,],type="l",main="dist. of beta for alpha = 24.9")
+plot(betarange,betaconditional[50,],type="l",main="dist. of beta for alpha = 29.9")
+plot(betarange,betaconditional[75,],type="l",main="dist. of beta for alpha = 34.9")
+
+## sampling grid values:
+
+alpha.samp <- rep(NA,10000)
+beta.samp <- rep(NA,10000)
+for (m in 1:10000){
+  a <- sample(1:100,size=1,replace=T,prob=alphamarginal)
+  b <- sample(1:100,size=1,replace=T,prob=betaconditional[a,])
+  alpha.samp[m] <- alpharange[a]
+  beta.samp[m] <- betarange[b]
+}
+
+par(mfrow=c(1,1))
+contour(alpharange,betarange,full,xlab="alpha",ylab="beta",drawlabels=F,col=2)
+points(alpha.samp,beta.samp)
+
+## calculating posterior means/intervals for alpha and beta
+
+par(mfrow=c(2,1))
+hist(alpha.samp,main="Alpha Samples")
+hist(beta.samp,main="Beta Samples")
+
+mean(alpha.samp)
+mean(beta.samp)
+
+alpha.sampsort <- sort(alpha.samp)
+beta.sampsort <- sort(beta.samp)
+
+alpha.sampsort[250]
+alpha.sampsort[9750]
+beta.sampsort[250]
+beta.sampsort[9750]
+
+sum(beta.samp >= 0)/10000
+
+par(mfrow=c(1,1))
+plot(t,y,pch=19)
+for (i in 1:1000){
+  abline(alpha.samp[i],beta.samp[i],col=3)
+}
+points(t,y,pch=19)
+
+##b. Use grid sampling to obtain 1000 samples from the joint posterior distribution. Give the 2D countour plot of the joint posterior distribution evaluated over your grid of values.
+
+##c. Use the samplies from (b) to obtain 1000 samples from the posterior predictive distribution for y*, the number of fatal accidents in 1986. Plot a histogram of these posterior predictive smaples.
+
+##d. Calculate a 95% posterior predictive interval for y* and compare it to the interval found in Question 7b. 
+## now plot the posterior distribution
+
+```
