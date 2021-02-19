@@ -250,10 +250,13 @@ points(alpha.samp,beta.samp)
 
 ## calculating posterior means/intervals for alpha and beta
 
+
+## distribution of alpha, beta, beta covers 0, so it **could** increase over time
 par(mfrow=c(2,1))
 hist(alpha.samp,main="Alpha Samples")
 hist(beta.samp,main="Beta Samples")
 
+##posterior means
 mean(alpha.samp)
 mean(beta.samp)
 
@@ -265,7 +268,25 @@ alpha.sampsort[9750]
 beta.sampsort[250]
 beta.sampsort[9750]
 
+## use the quantile command, give this a sample of data, and specify the 2.5% and 95%
+
+?quantile
+
+## but how do you actually get the confidence interval?
+## I want to put alpha and beta in here... but
+
+
+
+#posterior probability for an increase in trend over time is 4%
 sum(beta.samp >= 0)/10000
+#posterior probability for a decrease over time is 96%
+sum(beta.samp <= 0)/10000
+
+##compute a 95% interval
+
+theta <- rgamma(alpha.sampsort[1], beta.sampsort[2])/10
+y1986 <- rpois(1000,theta)
+print(sort(y1986)[c(25,976)])
 
 par(mfrow=c(1,1))
 plot(t,y,pch=19)
