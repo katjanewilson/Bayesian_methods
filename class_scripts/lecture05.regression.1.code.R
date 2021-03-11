@@ -35,15 +35,18 @@ numsamp <- 1000
 beta.samp <- matrix(NA,nrow=numsamp,ncol=p)
 sigsq.samp <- rep(NA,numsamp)
 for (i in 1:numsamp){
+  #sample sigma and invert
 	temp <- rgamma(1,shape=(n-p)/2,rate=s2/2)
 	cursigsq <- 1/temp
 	curvarbeta <- cursigsq*V.beta
 	curvarbeta.chol <- t(chol(curvarbeta))
+	#sample from the normal
 	z <- rnorm(p,0,1)
 	curbeta <- beta.hat+curvarbeta.chol%*%z
 	sigsq.samp[i] <- cursigsq
 	beta.samp[i,] <- curbeta
 }
+beta.samp
 
 #############################################
 #### SUMMARIZING POSTERIOR DISTRIBUTIONS ####
@@ -87,7 +90,7 @@ abline(v=summary(model)$sigma^2,col=3)
 Xstar <- c(1,130,17)  # new person with abdomen = 130 and wrist = 17
 Xstar <- t(Xstar)  # making it a row vector
 
-
+beta.samp
 ## use posterior samples from before:
 
 ystar.samp <- rep(NA,numsamp)

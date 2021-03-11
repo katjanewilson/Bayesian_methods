@@ -1,0 +1,138 @@
+### question 2
+
+data <- read.table("data/batting.1975-2016.csv",header=T,sep=",")
+data <- data[data$AB >=100,]
+dim(data)
+data <- data[data$HR >=1, ]
+HR <- data$HR
+AB <- data$AB
+player <- data$player
+year <- data$year
+average_run <- HR/AB
+data$average_run <- data$HR/data$AB
+
+numgrid <- 100
+## define what the domain of alpha and beta are
+## step 1: set up the grid
+alpha <- ppoints(numgrid)*.5+1.9
+alpha
+beta <- ppoints(numgrid)*6+69  # beta between 69 and 75
+beta
+full <- matrix(NA, nrow = 100, ncol = 100)
+for( i in 1:100){
+  for(j in 1:100){
+    full[i,j] <- sum(dbeta(average_run, alpha[i], beta[j], log = T))
+  }
+}
+#evaluate the joint posterior
+full <- exp(full - max(full))
+full
+full <- full/sum(full)
+full
+contour(alpha, beta, full, xlab = "alpha", ylab = "beta", drawlabels = F)
+
+
+## calculating probabilities for grid sampler:
+
+alphamarginal <- rep(NA,numgrid)
+for (i in 1:numgrid){
+  alphamarginal[i] <- sum(full[i,])
+}
+betaconditional <- matrix(NA,nrow=numgrid,ncol=numgrid)
+for (i in 1:numgrid){
+  for (j in 1:numgrid){
+    betaconditional[i,j] <- full[i,j]/sum(full[i,])
+  }
+}
+
+## plotting marginal distribution of alpha
+par(mfrow=c(1,1))
+plot(alpha,alphamarginal,type="l",main="marginal dist. of alpha")
+
+## plotting conditional distribution of beta given alpha
+alpha[25]
+alpha[50]
+alpha[75]
+par(mfrow=c(3,1))
+plot(beta,betaconditional[25,],type="l",main="dist. of beta for alpha = 24.9")
+plot(beta,betaconditional[50,],type="l",main="dist. of beta for alpha = 29.9")
+plot(beta,betaconditional[75,],type="l",main="dist. of beta for alpha = 34.9")
+
+## sampling grid values:
+
+alpha.samp <- rep(NA,10000)
+beta.samp <- rep(NA,10000)
+for (m in 1:10000){
+  a <- sample(1:100,size=1,replace=T,prob=alphamarginal)
+  b <- sample(1:100,size=1,replace=T,prob=betaconditional[a,])
+  alpha.samp[m] <- alpha[a]
+  beta.samp[m] <- beta[b]
+}
+
+par(mfrow=c(1,1))
+contour(alpha, beta,full,xlab="alpha",ylab="beta",drawlabels=F,col=2)
+points(alpha.samp,beta.samp)
+
+
+
+## distribution of alpha, beta, beta covers 0, so it **could** increase over time
+par(mfrow=c(2,1))
+hist(alpha.samp,main="Alpha Samples")
+hist(beta.samp,main="Beta Samples")
+
+##posterior means
+mean(alpha.samp)
+mean(beta.samp)
+alpha.sampsort <- sort(alpha.samp)
+beta.sampsort <- sort(beta.samp)
+alpha.sampsort[250]
+alpha.sampsort[9750]
+beta.sampsort[250]
+beta.sampsort[9750]
+
+
+#### question 3
+#use a grid search algorithm on the log likelihood to find maximum estimates of alpha and beta
+max(full)
+which(full == max(full), arr.ind = T)
+full
+alpha_mle <- alpha.samp[40] ## about 2.0975
+beta_mle <- beta.samp[51] ## about 72.03
+
+#MLE estimates variance
+nr <- (alpha_mle*beta_mle)
+dr1 <- (alpha_mle + beta_mle)^2
+dr2 <- (alpha_mle + beta_mle +1)
+var_mle <- nr/(dr1*dr2)
+var_mle
+
+#actual data variance
+var(average_run)
+
+
+### question 4
+
+loglik_beta <- function(start_val, x){
+  sum(-dbeta(x,
+             start_val[1],
+             start_val[2],
+             log = TRUE))
+}
+
+out <- optim(par = c(0.1,0.1),
+             fn = loglik_beta,
+             x = average_run,
+             method = "Nelder-Mead")
+out$par
+
+out <- optim(par = c(0.1,0.1),
+             fn = loglik_beta,
+             x = average_run,
+             method = "BFGS")
+out$par
+
+out <- optim(par = c(0.1,0.1),
+             fn = loglik_beta,
+             x = average_run,
+             method = "CG")
+out$par

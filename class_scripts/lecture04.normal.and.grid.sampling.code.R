@@ -195,7 +195,7 @@ alpharange <- ppoints(numgrid)*20   # alpha between 0 and 20
 betarange <- ppoints(numgrid)*6  # beta between 0 and 6
 
 numgrid <- 100
-alpharange <- ppoints(numgrid)*20+20   # alpha between 20 and 40
+alpharange <- ppoints(numgrid)*20+20  # alpha between 20 and 40
 betarange <- ppoints(numgrid)*6-3  # beta between -3 and 3
 full <- matrix(NA,nrow=numgrid,ncol=numgrid)
 for (i in 1:numgrid){

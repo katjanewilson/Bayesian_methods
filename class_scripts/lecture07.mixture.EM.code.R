@@ -126,6 +126,7 @@ lastiter <- length(itermat[,1])
 itermat[lastiter,]
 
 ## EM code above with different Starting values: 
+#this converges to the same top of the hill
 curalpha <- 0.5
 curmu0 <- -10
 curmu1 <- 10
@@ -231,7 +232,7 @@ y1 <- (1-alpha)*dnorm(x,mu0,sqrt(sigsq0))
 y2 <- alpha*dnorm(x,mu1,sqrt(sigsq1))
 lines(x,y1,col=2)
 lines(x,y2,col=3)
-
+alpha
 #EM algorithm for equal-variance model
 Estep2 <- function(y,alpha,mu0,mu1,sigsq){
   n <- length(y)  
@@ -264,6 +265,7 @@ curmu1 <- 0.15
 cursigsq <- 0.1
 curind <- Estep2(hrprop,curalpha,curmu0,curmu1,cursigsq)
 loglik <- loglik.mix2(hrprop,curind,curalpha,curmu0,curmu1,cursigsq)
+
 itermat2 <- c(curalpha,curmu0,curmu1,cursigsq,loglik)
 diff <- 1
 numiters <- 1
